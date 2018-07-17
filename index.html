@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Quiz Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="theme/bootstrap.css" media="screen">
+</head>
+<body>
+    <div class="container">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h2>Quiz Game</h2>
+                <div><button value="submit" id="start-button">Start</button></div>
+            </div>
+        </div>
+        <div class="col-md-12" id="form">
+            <form>
+                <fieldset>
+                    <div id="question"></div>
+                    <div><button value="submit" id="submit-button">Next</button></div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="col-md-12" id="result"></div>
+    </div>
+
+    <script src="jquery.js"></script>
+    <script>
+        $("#form").hide();
+        var questionTag = $("#question");
+
+        var currentQuestion = 0;
+        var correctAnswers = 0;
+        var questionList = [
+            {
+                question: "What is the color of water?",
+                options: [
+                    "White",
+                    "Green",
+                    "Colourless",
+                    "Blue"
+                ],
+                answer: "2"
+            },
+            {
+                question: "India is a ?",
+                options: [
+                    "City",
+                    "State",
+                    "Village",
+                    "Country"
+                ],
+                answer: "3"
+            }
+        ];
+
+        $("#start-button").click(function (event) {
+            event.preventDefault();
+            loadQuestion(0);
+
+            $(this).hide();
+
+        });
+
+        $("#submit-button").click(function () {
+            event.preventDefault();
+            checkAns(currentQuestion);
+
+            currentQuestion++;
+            loadQuestion(currentQuestion);
+        });
+
+        function checkAns(currentQuestion) {
+            if ($("input[name=option]:checked").val() === questionList[currentQuestion].answer) {
+                correctAnswers++;
+            };
+
+        };
+
+        function loadQuestion(questionToLoad) {
+            event.preventDefault();
+            $("#question").html("Question <br>");
+
+            for (var i = 0; i < questionList.length; i++) {
+                if (questionToLoad !== i)
+                    continue;
+                var questionNumber = i + 1;
+                var $question = $("<p>" + questionNumber + "." + questionList[i].question + "</p>");
+
+                var options = questionList[i].options;
+
+                for (var j in options) {
+                    if (options.hasOwnProperty(j)) {
+                        var $newInput = $("<div><input type='radio' name='option' value=" + j + " id='option" + j + "'><label for='option'" + j + ">"
+                            + options[j] + "</label></div>");
+                        $newInput.appendTo($question);
+                        $("#form").show();
+                    }
+                }
+                $question.appendTo(questionTag);
+
+                $("#option0").prop('checked', true);
+
+                break;
+            }
+
+            if (currentQuestion === questionList.length - 1) {
+                $("#submit-button").html("Submit");
+            }
+
+            if (currentQuestion === questionList.length) {
+                $("#form").hide();
+                var $result = $("<p>You have scored " + correctAnswers + " out of " + questionList.length + "</p>");
+                $result.appendTo($("#result"));
+
+            }
+
+
+        }
+    </script>
+</body>
+</html>
