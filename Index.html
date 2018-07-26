@@ -29,10 +29,9 @@
             <p><a class="btn btn-primary btn-lg" id="start-button">Let's Start</a></p>
 
             <div id="form" class="">
-                <form>
-                    <fieldset>
-                        <div id="question" class="lead"></div>
-                    </fieldset>
+                <form id="newform">
+                    <!--   <div id="question" class="lead"></div>-->
+
                 </form>
                 <button value="submit" class="btn btn-primary" id="next-button"></button>
                 <div class="progress progress-striped active" id="progress">
@@ -42,14 +41,10 @@
 
             <div id="result"></div>
             <a class="btn btn-info" href="/" id="reset-button">Reset</a>
-            <!--<div id="pagination">
-                <ul class="pagination" id="pagination-demo"></ul>
-            </div>-->
         </div>
     </div>
 
     <script src="jquery.js"></script>
-    <!-- <script src="jquery.twbsPagination.min.js"></script>-->
     <script>
 
         $("#form").hide();
@@ -66,7 +61,7 @@
             {
                 question: "What is the color of water?",
                 options: [
-                    "White white",
+                    "White",
                     "Green",
                     "Colourless",
                     "Blue"
@@ -97,78 +92,72 @@
 
         $("#start-button").click(function (event) {
             event.preventDefault();
+
+            loadAllQuestion();
+            bindClick();
             loadQuestion(currentQuestion);
             loadPageScroll();
-            //loadPagination();
             $(this).hide();
 
         });
 
         $("#next-button").click(function () {
             event.preventDefault();
-
-            storeUserAnswer(currentQuestion);
             currentQuestion++;;
             if (currentQuestion === questionList.length) {
                 showResult();
             } else loadQuestion(currentQuestion);
-
-
         });
 
         function storeUserAnswer(currentQuestion) {
-            if ($("input[name=option]:checked").val()) {
+            if ($("input[name='option" + (currentQuestion + 1) + "']:checked").val()) {
                 userAnswers[currentQuestion] = $("input[name=option]:checked").val();
 
-                var answerCount = userAnswers.filter(a=>a !== 'undefined').length;;
+                var answerCount = userAnswers.filter(a=>a !== 'undefined').length;
                 var widthOfProgressBar = (answerCount / questionList.length) * 100 + "%";
                 $("#progress-bar").css("width", widthOfProgressBar);
                 $("#progress-bar").html(answerCount + "/" + questionList.length + " questions answered");
             };
         };
 
+        function bindClick() {
+            $('input[type="radio"]').click(function () {
+                if ($(this).is(':checked')) {
+                    storeUserAnswer(currentQuestion);
+                }
+            });
+        }
 
+        function loadAllQuestion() {
+            for (var i = 0; i < questionList.length; i++) {
+                var $options = "";
+                for (var j in questionList[i].options) {
+                    if (questionList[i].options.hasOwnProperty(j)) {
+                        $options += ("<label><input type='radio' name='option" + (i + 1) + "' value=" + j + " id='option" + j + "'>&nbsp"
+                            + questionList[i].options[j] + "</label><br>");
+                    }
+                }
+                var $question = $("<div id='question" + (i) + "' class='lead'><p>" + (i + 1) + "." + questionList[i].question + "</p>" + $options + "</div>");
+                $question.appendTo("#newform");
+            }
+            $("#form").show();
+        };
 
         function loadQuestion(questionToLoad) {
             currentQuestion = questionToLoad;
-            $("#question").html("");
-
-            if (questionList[questionToLoad]) {
-                var questionNumber = questionToLoad + 1;
-                var $question = $("<p>" + questionNumber + "." + questionList[questionToLoad].question + "</p>");
-                $question.appendTo(questionTag);
-
-                var $options = "";
-
-                for (var j in questionList[questionToLoad].options) {
-                    if (questionList[questionToLoad].options.hasOwnProperty(j)) {
-                        $options = $("<label class = 'radio'><input type='radio' name='option' value=" + j + " id='option" + j + "'>"
-                            + questionList[questionToLoad].options[j] + "</label>");
-
-                        $("#form").show();
-                    }
-                    $options.appendTo(questionTag);
-                }
-                if (userAnswers[questionToLoad] !== 'undefined') {
-                   // debugger;
-                    $("#option" + userAnswers[questionToLoad] + "").attr("checked", "checked");
-                }
-            }
-
             if (currentQuestion === questionList.length - 1) {
                 $('#next-button').text("Submit");
                 $('#next-button').addClass("btn-success");
-                //$('.next .page-link').html("Submit");
-                //$('.next .page-link').addClass("Submit");
-                //$('.next').removeClass("disabled");
-            }
-            else
-                //$('.next .page-link').text("Next");
+            } else {
+                $('#next-button').removeClass("btn-success");
                 $('#next-button').text("Next");
+            }
 
-            //            $("#pageNumber" + (currentQuestion + 1)).addClass("active");
             $(".page-item").removeClass("active");
-            $("#pageNumber" + (currentQuestion+1)).addClass("active");
+            $("#pageNumber" + (questionToLoad + 1)).addClass("active");
+
+            $("#newform").children().hide();
+            $("#question" + questionToLoad + "").show();
         }
 
         function showResult() {
@@ -191,48 +180,15 @@
         function loadPageScroll() {
             var $pagination = $("<ul class='pagination'>");
 
-           for (var i = 0; i < questionList.length; i++) {
+            for (var i = 0; i < questionList.length; i++) {
                 var questionNumber = i + 1;
-                var $pageNumber = $("<li class= 'page-item' id='pageNumber" + questionNumber + "'><a href='#' onclick='loadQuestion(" + i + ")'>" + questionNumber + "</a></li>");
+                var $pageNumber = $("<li class= 'page-item' id='pageNumber" + questionNumber + "'><a href='#' onclick='loadQuestion(" + i + ")'>"
+                                  + questionNumber + "</a></li>");
                 $pageNumber.appendTo($pagination);
             }
-           $pagination.appendTo($("#form"));
-            $("#pageNumber1" ).addClass("active");
+            $pagination.appendTo($("#form"));
+            $("#pageNumber1").addClass("active");
         }
-
-        //$("input").click(function (e) {
-        //    console.log($(this).attr('value'));
-        //    //    var answerCount = userAnswers.filter(a => a !== 'undefined').length;;
-        //    //    var widthOfProgressBar = (answerCount / questionList.length) * 100 + "%";
-        //    //    $("#progress-bar").css("width", widthOfProgressBar);
-        //    //    $("#progress-bar").html(answerCount + "/" + questionList.length + " questions answered");
-        //});
-
-        //function loadPagination() {
-        //    $('#pagination-demo').twbsPagination({
-        //        totalPages: questionList.length,
-        //        visiblePages: 3,
-        //        next: 'Next',
-        //        prev: 'Prev',
-        //        onPageClick: function (event, page) {
-        //            if ($('#pagination-demo .next').text() === "Next") {
-        //                loadQuestion(page - 1);
-        //                $("#pagination").show();
-        //                $("#pagination-demo").show();
-        //            }
-
-        //            storeUserAnswer(page - 1);
-
-        //        }
-        //    });
-        //}
-
-        //$('.page-link').click(function () {
-        //    debugger;
-        //    if ($('#pagination-demo .next').text() === "Submit")
-        //        showResult();
-        //});
-
     </script>
 </body>
 </html>
