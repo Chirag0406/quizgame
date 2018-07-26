@@ -87,6 +87,26 @@
                     "28"
                 ],
                 answer: "0"
+            },
+            {
+                question: "What is 12*4",
+                options: [
+                    "36",
+                    "24",
+                    "48",
+                    "28"
+                ],
+                answer: "2"
+            },
+            {
+                question: "BW stands for",
+                options: [
+                    "Black and White",
+                    "BombayWorks",
+                    "BombayWala",
+                    "Business Week"
+                ],
+                answer: "1"
             }
         ];
 
@@ -111,7 +131,7 @@
 
         function storeUserAnswer(currentQuestion) {
             if ($("input[name='option" + (currentQuestion + 1) + "']:checked").val()) {
-                userAnswers[currentQuestion] = $("input[name=option]:checked").val();
+                userAnswers[currentQuestion] = $("input[name='option" + (currentQuestion + 1) + "']:checked").val();
 
                 var answerCount = userAnswers.filter(a=>a !== 'undefined').length;
                 var widthOfProgressBar = (answerCount / questionList.length) * 100 + "%";
