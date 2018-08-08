@@ -54,8 +54,8 @@ var questionList = [
     {
         question: "BW stands for",
         options: [
-            "Black and White",
             "BombayWorks",
+	    "Black and White",
             "BombayWala",
             "Business Week"
         ],
@@ -87,7 +87,7 @@ function storeUserAnswer(currentQuestion) {
         var widthOfProgressBar = (answerCount / questionList.length) * 100 + "%";
         $("#progress-bar").css("width", widthOfProgressBar);
         $("#progress-bar").html(answerCount + "/" + questionList.length + " questions answered");
-
+loadQuestion(currentQuestion+1);
         if (answerCount === 5) {
             $submitButton.show();
         }
